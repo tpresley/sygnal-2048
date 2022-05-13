@@ -78,14 +78,12 @@ function intent({ DOM }) {
 
   const restart$   = DOM.select('.restart').events('click')
 
-  const firstTile$ = xs.fromArray(Array(2).fill())
+  const firstTile$ = xs.fromArray([1,2])
 
   return {
     RESTART:  restart$,
     MOVE:     move$,
     ADD_TILE: firstTile$,
-    LOST:     xs.never(),
-    WON:      xs.never(),
   }
 }
 
@@ -100,7 +98,7 @@ function view({ state, tiles }) {
 
   return (
     <div className='container'>
-      <h1>Shameless 2048 Ripoff</h1>
+      <h1>Cycle.js 2048</h1>
       { message && <h2>{ message }</h2> }
       <h2>Current Max: { max }</h2>
       <div className="board-container">
@@ -174,7 +172,6 @@ function shift(rawTiles, direction) {
       if (tile) {
         const originalPosition = tile[inner]
         tile[inner] = pos
-        const newPos = pos
         if (previousTile !== null && !previousTile.merged && tile.value === previousTile.value) {
           const newValue     = tile.value * 2
           tile.value         = newValue
