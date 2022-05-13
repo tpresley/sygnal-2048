@@ -54,13 +54,10 @@ const model = {
   ADD_TILE: (state, data, next) => {
     const tiles    = state.tiles
     const newTiles = addTile(tiles)
-    const newTile  = newTiles[newTiles.length - 1]
-    const twos  = state.twos + (newTile.value === 2 ? 1 : 0)
-    const fours = state.fours + (newTile.value === 4 ? 1 : 0)
     if (newTiles.filter(tile => !tile.deleted).length === 16 && !hasValidMove(newTiles)) {
       next('LOST')
     }
-    return { ...state, tiles: newTiles, locked: false, twos, fours }
+    return { ...state, tiles: newTiles, locked: false }
   },
 
   LOST: (state, data) => ({ ...state, over: true, won: false }),
