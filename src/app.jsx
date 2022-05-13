@@ -125,7 +125,7 @@ const children = {
 }
 
 
-export default component({ name: 'BOARD', intent, model, view, children, initialState })
+export default component({ name: 'BOARD', model, intent, view, children, initialState })
 
 
 let id = 0
