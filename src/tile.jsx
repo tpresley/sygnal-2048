@@ -6,8 +6,8 @@ import { component, ABORT } from 'cyclejs-component'
 
 const model = {
   HIDE: (state) => {
-    if (state.deleted) return { id: state.id, value: 0, row: state.row, column: state.column, deleted: true, hidden: true }
-    return ABORT
+    if (!state.deleted) return ABORT
+    return { id: state.id, value: 0, row: state.row, column: state.column, deleted: true, hidden: true }
   }
 }
 
