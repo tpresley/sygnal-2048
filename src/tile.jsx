@@ -5,10 +5,12 @@ import delay from 'xstream/extra/delay'
 import { component, ABORT } from 'cyclejs-component'
 
 const model = {
-  HIDE: (state) => {
+  HIDE: (state, data, next) => {
     if (!state.deleted) return ABORT
+    setTimeout(_ => next('DELETE'), 1000)
     return { id: state.id, value: 0, row: state.row, column: state.column, deleted: true, hidden: true }
-  }
+  },
+  DELETE: (state) => undefined
 }
 
 function intent({ STATE, DOM }) {
@@ -23,10 +25,10 @@ function intent({ STATE, DOM }) {
 
 function view({ state }) {
   const { id, value, row, column, hidden } = state
-  const classes = `tile tile-${ id }`
+  const classes = `tile tile-${ id } ${ !!state.new ? 'new' : '' }`
   const log2val = Math.log2(state.value || 0)
   const color   = Math.floor(((50 * log2val) / 11) + 30)
-  const style   = { '--row': `${row}`, '--col': `${column}`, '--tile-color': `${color}%`, opacity: !!hidden ? '0' : '1' }
+  const style   = { '--row': `${row}`, '--col': `${column}`, '--tile-color': `${color}%`, display: !!hidden ? 'none' : 'inherit' }
 
   return (
     <div className={ classes } id={ `tile-${ id }` } style={ style }>

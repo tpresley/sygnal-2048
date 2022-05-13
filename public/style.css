@@ -53,10 +53,13 @@ body {
   align-items: center;
   justify-content: center;
   transition: inset 100ms ease-in-out;
-  animation: show 250ms;
   /* transform: translate(var(--col-offset), var(--row-offset)); */
   top: var(--row-offset);
   left: var(--col-offset);
+}
+
+.tile.new {
+  animation: show 250ms;
 }
 
 @keyframes show {
