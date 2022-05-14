@@ -47,7 +47,7 @@ const model = {
     setTimeout(_ => {
       next('ADD_TILE')
       if (max === 2048) next('WON')
-    }, 200)
+    }, 100)
     return { ...state, tiles, max, locked: true }
   },
 
@@ -76,7 +76,7 @@ function intent({ DOM }) {
   const right$ = allKey$.filter(keyFilter(RIGTH)).mapTo('RIGHT')
   const move$  = xs.merge(up$, down$, left$, right$)
 
-  const restart$   = DOM.select('.restart').events('click')
+  const restart$   = DOM.select('.restart, .gameover').events('click')
 
   const firstTile$ = xs.fromArray([1,2])
 
@@ -90,6 +90,7 @@ function intent({ DOM }) {
 
 function view({ state, tiles }) {
   const { max, over, won } = state
+  const lost = over && !won
 
   let message = ''
   if (over) {
@@ -99,7 +100,6 @@ function view({ state, tiles }) {
   return (
     <div className='container'>
       <h1>Cycle.js 2048</h1>
-      { message && <h2>{ message }</h2> }
       <h2>Current Max: { max }</h2>
       <div className="board-container">
         <div className='slot-board'>
@@ -108,6 +108,16 @@ function view({ state, tiles }) {
         <div className='tile-board'>
           { tiles }
         </div>
+        { lost &&
+          <div className="gameover lost" >
+            <span className="lost-message">GAME OVER</span>
+          </div>
+        }
+        { won &&
+          <div className="gameover won" >
+            <span className="won-message">YOU WON!!</span>
+          </div>
+        }
       </div>
       <div><input type="button" className="restart" value="Start Over" /></div>
     </div>

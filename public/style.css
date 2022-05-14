@@ -36,6 +36,34 @@ body {
   background-color: lightgray;
 }
 
+.gameover {
+  height: var(--board-size);
+  width: var(--board-size);
+  background: rgba(100,100,100,1);
+  z-index: 30;
+  position: absolute;
+  color: white;
+  opacity: 0.5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.lost-message {
+    font-size: 3rem;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+.won-message {
+  font-size: 5rem;
+  font-family: monospace;
+  font-weight: bold;
+  color: BEIGE;
+  text-align: center;
+}
+
 .slot {
   background-color: gray;
   height: var(--tile-size);
@@ -100,4 +128,10 @@ body {
 
 .col-3 {
   --col: 3
+}
+
+
+.restart {
+  font-size: 1.5rem;
+  padding: 0.5em;
 }
