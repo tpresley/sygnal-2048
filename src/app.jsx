@@ -9,6 +9,8 @@ const DOWN  = 'ArrowDown'
 const LEFT  = 'ArrowLeft'
 const RIGTH = 'ArrowRight'
 
+const NEW_TILE_DELAY = 100
+
 const blankTile = {
   id: 0,
   value: 0,
@@ -19,118 +21,122 @@ const blankTile = {
 const initialState = {
   tiles: [],
   over: false,
-  won: false,
-  max: 0,
+  max: 2,
   locked: false,
-  twos: 0,
-  fours: 0,
 }
 
 
+export default component({
+  name: 'BOARD',
 
-const model = {
+  initialState,
 
-  RESTART:  (state, data, next) => {
-    next('ADD_TILE')
-    next('ADD_TILE')
-    return { ...initialState }
+  calculated: {
+    max:  (state) => state.tiles.filter(tile => tile && !tile.deleted).reduce((acc, tile) => (acc > tile.value) ? acc : tile.value, 0),
+    lost: (state) => !state.over && state.tiles.filter(tile => !tile.deleted).length === 16 && !hasValidMove(state.tiles)
   },
 
-  MOVE:     (state, data, next) => {
-    if (state.locked || state.over) return ABORT
+  storeCalculatedInState: true,
 
-    const tiles = shift(state.tiles, data)
-    if (!tiles) return ABORT
+  model: {
 
-    const max = tiles.filter(tile => tile && !tile.deleted).reduce((acc, tile) => (acc > tile.value) ? acc : tile.value, 0)
-
-    setTimeout(_ => {
+    RESTART:  (state, data, next) => {
       next('ADD_TILE')
-      if (max === 2048) next('WON')
-    }, 100)
-    return { ...state, tiles, max, locked: true }
+      next('ADD_TILE')
+      return { ...initialState }
+    },
+
+    MOVE:     (state, data, next) => {
+      if (state.locked || state.over) return ABORT
+
+      const tiles = shift(state.tiles, data)
+      if (!tiles) return ABORT
+
+      setTimeout(_ => {
+        next('ADD_TILE')
+      }, NEW_TILE_DELAY)
+      return { ...state, tiles, locked: true }
+    },
+
+    ADD_TILE: (state, data) => {
+      const newTiles = addTile(state.tiles)
+      return { ...state, tiles: newTiles, locked: false }
+    },
+
+    GAME_OVER: (state, data) => ({ ...state, over: true, won: data }),
+
   },
 
-  ADD_TILE: (state, data, next) => {
-    const tiles    = state.tiles
-    const newTiles = addTile(tiles)
-    if (newTiles.filter(tile => !tile.deleted).length === 16 && !hasValidMove(newTiles)) {
-      next('LOST')
+
+  intent: ({ STATE, DOM }) => {
+    const allKey$   = DOM.select('document').events('keydown').map(e => e.key)
+    const keyFilter = (key) => (pressed) => pressed === key
+
+    const up$    = allKey$.filter(keyFilter(UP)).mapTo('UP')
+    const down$  = allKey$.filter(keyFilter(DOWN)).mapTo('DOWN')
+    const left$  = allKey$.filter(keyFilter(LEFT)).mapTo('LEFT')
+    const right$ = allKey$.filter(keyFilter(RIGTH)).mapTo('RIGHT')
+    const move$  = xs.merge(up$, down$, left$, right$)
+
+    const won$       = STATE.stream.filter(state => !state.over && state.max === 2048).mapTo(true)
+    const lost$      = STATE.stream.filter(state => state.lost === true).mapTo(false)
+    const gameOver$  = xs.merge(won$, lost$)
+    const restart$   = DOM.select('.restart, .gameover').events('click')
+
+    const firstTile$ = xs.fromArray([1,2])
+
+    return {
+      RESTART:   restart$,
+      GAME_OVER: gameOver$,
+      MOVE:      move$,
+      ADD_TILE:  firstTile$,
     }
-    return { ...state, tiles: newTiles, locked: false }
   },
 
-  LOST: (state, data) => ({ ...state, over: true, won: false }),
-  WON:  (state, data) => ({ ...state, over: true, won: true  }),
 
-}
+  view: ({ state, tiles }) => {
+    const { max, over, won } = state
 
+    let message = ''
+    if (over) {
+      message = won ? 'YOU WON!!' : 'Try Again...'
+    }
 
-function intent({ DOM }) {
-  const allKey$   = DOM.select('document').events('keydown').map(e => e.key)
-  const keyFilter = (key) => (pressed) => pressed === key
-
-  const up$    = allKey$.filter(keyFilter(UP)).mapTo('UP')
-  const down$  = allKey$.filter(keyFilter(DOWN)).mapTo('DOWN')
-  const left$  = allKey$.filter(keyFilter(LEFT)).mapTo('LEFT')
-  const right$ = allKey$.filter(keyFilter(RIGTH)).mapTo('RIGHT')
-  const move$  = xs.merge(up$, down$, left$, right$)
-
-  const restart$   = DOM.select('.restart, .gameover').events('click')
-
-  const firstTile$ = xs.fromArray([1,2])
-
-  return {
-    RESTART:  restart$,
-    MOVE:     move$,
-    ADD_TILE: firstTile$,
-  }
-}
-
-
-function view({ state, tiles }) {
-  const { max, over, won } = state
-  const lost = over && !won
-
-  let message = ''
-  if (over) {
-    message = won ? 'YOU WON!!' : 'Try Again...'
-  }
-
-  return (
-    <div className='container'>
-      <h1>Cycle.js 2048</h1>
-      <h2>Current Max: { max }</h2>
-      <div className="board-container">
-        <div className='slot-board'>
-          { Array(16).fill().map(_ => <div className="slot"></div>) }
-        </div>
-        <div className='tile-board'>
-          { tiles }
-        </div>
-        { lost &&
-          <div className="gameover lost" >
-            <span className="lost-message">GAME OVER</span>
+    return (
+      <div className='container'>
+        <h1>Cycle.js 2048</h1>
+        <h2>Current Max: { max }</h2>
+        <div className="board-container">
+          <div className='slot-board'>
+            { Array(16).fill().map(_ => <div className="slot"></div>) }
           </div>
-        }
-        { won &&
-          <div className="gameover won" >
-            <span className="won-message">YOU WON!!</span>
+          <div className='tile-board'>
+            { tiles }
           </div>
-        }
+          { over && won &&
+            <div className="gameover won" >
+              <span className="won-message">YOU WON!!</span>
+            </div>
+          }
+          { over && !won &&
+            <div className="gameover lost" >
+              <span className="lost-message">GAME OVER</span>
+            </div>
+          }
+        </div>
+        <div><input type="button" className="restart" value="Start Over" /></div>
       </div>
-      <div><input type="button" className="restart" value="Start Over" /></div>
-    </div>
-  )
-}
+    )
+  },
 
 
-const children = {
-  tiles: collection(tile, 'tiles')
-}
+  children: {
+    tiles: collection(tile, 'tiles')
+  }
+
+})
 
 
-export default component({ name: 'BOARD', model, intent, view, children, initialState })
 
 
 let id = 0
