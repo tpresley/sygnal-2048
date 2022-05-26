@@ -30,8 +30,6 @@ export default component({
     lost: (state) => !state.over && state.tiles.filter(tile => !tile.deleted).length === 16 && !hasValidMove(state.tiles)
   },
 
-  storeCalculatedInState: true,
-
   model: {
 
     RESTART:  (state, data, next) => {
@@ -98,7 +96,7 @@ export default component({
 
     return (
       <div className='container'>
-        <h1>Cycle.js 2048</h1>
+        <h1>Sygnal 2048</h1>
         <h2>Current Max: { max }</h2>
         <div className="board-container">
           <div className='slot-board'>
