@@ -1,7 +1,7 @@
 'use strict'
 
 import xs from 'xstream'
-import { component, collection, ABORT } from 'cyclejs-component'
+import { component, collection, ABORT } from 'sygnal'
 import { addTile, shift, hasValidMove } from './lib/utils'
 import tile from './tile'
 

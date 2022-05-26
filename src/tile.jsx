@@ -2,9 +2,11 @@
 
 import xs from 'xstream'
 import delay from 'xstream/extra/delay'
-import { component, ABORT } from 'cyclejs-component'
+import { component, ABORT } from 'sygnal'
 import classes from './lib/classses'
 
+
+const TILE_DELETE_DELAY = 1000
 
 export default component({
   name: 'TILE',
@@ -12,7 +14,7 @@ export default component({
   model: {
     HIDE: (state, data, next) => {
       if (!state.deleted) return ABORT
-      setTimeout(_ => next('DELETE'), 1000)
+      setTimeout(_ => next('DELETE'), TILE_DELETE_DELAY)
       return { id: state.id, value: 0, row: state.row, column: state.column, deleted: true, hidden: true }
     },
     DELETE: (state) => undefined
