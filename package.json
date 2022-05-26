@@ -7,7 +7,7 @@
     "vite": "^2.9.9"
   },
   "dependencies": {
-    "cyclejs-component": "^1.5.0",
+    "cyclejs-component": "^1.5.4",
     "xstream": "^11.0.0"
   },
   "scripts": {
