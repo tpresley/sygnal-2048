@@ -1,7 +1,6 @@
 'use strict'
 
-import xs from 'xstream'
-import { component, collection, ABORT } from 'sygnal'
+import { component, collection, xs, ABORT } from 'sygnal'
 import { addTile, shift, hasValidMove } from './lib/utils'
 import tile from './tile'
 

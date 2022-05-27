@@ -9,10 +9,12 @@
   <body>
     <div id="root"></div>
     <script type="module">
+      // import CSS (Vite automatically injects this properly on bundling)
+      import classes from '../public/style.css';
+
       // initialize the application
       import { run } from 'sygnal';
       import App from './app';
-      import classes from '../public/style.css';
 
       // run() adds STATE, DOM, EVENTS, and LOG drivers automatically
       // and mounts to the #root element

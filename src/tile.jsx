@@ -1,9 +1,7 @@
 'use strict'
 
-import xs from 'xstream'
 import delay from 'xstream/extra/delay'
-import { component, ABORT } from 'sygnal'
-import classes from './lib/classses'
+import { component, classes, xs, ABORT } from 'sygnal'
 
 
 const TILE_DELETE_DELAY = 1000
