@@ -38,13 +38,14 @@ export default component({
     const animation$ = DOM.select('.tile').events('transitionend')
 
     // normally you could just use the animation$ stream above, but the CSS 'transitionend' event
-    //
     // is not 100% reliable, so the following adds a 'fallback' that fires after 500ms no matter what
+    //
     // 1) take events when the tile is marked for deletion
     // 2) create a new stream that fires after 500ms
     // 3) merge the new delayed stream with the animation end events above
     // 4) limit events from the mereged stream to 1, so we only get one event no matter what
     // 5) we are returning a stream from map instead of a value... the .flatten() method fixes this
+    //    this is very similar to the .flat() method for arrays which converts [1,2,[3,4,[5,6],7]] -> [1,2,3,4,5,6,7]
     //
     // The resulting stream will normally fire when the CSS transition on the current tile completes
     // but if the transition event fails to fire, then the stream will fire after 500ms
@@ -63,7 +64,7 @@ export default component({
   view: ({ state }) => {
     const { id, value, row, column, hidden } = state
 
-    // determine the calsses to apply to the tile
+    // determine the classes to apply to the tile
     const classNames = classes('tile', `tile-${ id }`, { 'new': !!state.new })
 
     // calculate the tile color based on the current tile value
@@ -78,7 +79,7 @@ export default component({
       display: !!hidden ? 'none' : 'inherit'
     }
 
-    // put it all together
+    // put it all together and return virtual DOM
     return (
       <div className={ classNames } id={ `tile-${ id }` } style={ style }>
         { value }

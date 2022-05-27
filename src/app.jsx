@@ -41,7 +41,7 @@ export default component({
   // NOTE: avoid using one calculated field in the calculation of another as this can have unpredictable results
   //       at minimum this will cause a delay in the correct value being calculated until a 2nd state update
   calculated: {
-    // calculate the largets tile by filtering out delted tiles, then reducing to find the biggest value
+    // calculate the largest tile by filtering out deleted tiles, then reducing to find the biggest value
     // results in the value of the largest non-deleted tile on the board
     max:  (state) => state.tiles.filter(tile => tile && !tile.deleted).reduce((acc, tile) => (acc > tile.value) ? acc : tile.value, 0),
     // calculate if the user has lost the game by filtering out deleted tiles, seeing if the board is full (has 16 tiles on it)
@@ -121,7 +121,7 @@ export default component({
   //   + LOG
   // - additional drivers (for networking for example) can be added in the 2nd parameter of 'run()'
   intent: ({ STATE, DOM }) => {
-    // the DOM source had .select() and .events() methods for listening to user actions in the browser
+    // the DOM source has .select() and .events() methods for listening to user actions in the browser
     // the .select() method can be passed any valid CSS selector to locate DOM elements
     // it is convention to use class names, but HTML id's or attribute selectors work just as well
     // the .events() method takes any valid DOM event ('click', 'input', 'keydown' etc.)
@@ -133,6 +133,8 @@ export default component({
     // to 'break out' of the isolated scope, use DOM.select('document') to access the entire page
     // - after DOM.select('document') adding additional .select()'s will target ALL elements
     //   on the page that match the CSS selector
+    // NOTE: items in a collection() comoponent are automatically isolated, so to access any
+    //       DOM events outside the item component itself, use the method above
 
     // capture all user keydown events in the browser window, and extract the 'key' from the event object
     const allKey$   = DOM.select('document').events('keydown').map(e => e.key)
@@ -188,6 +190,9 @@ export default component({
     //   2) any data provided by the stream will be passed to the 2nd parameter of the action handler
     // - it is convention to use ALL_CAPS for 'action' names, but any valid Javascript key name will work
     //   (including JS Symbols!) as long as the names here match those in 'model'
+    // NOTE: each 'action' can only be specified once, so if multiple streams can initiate the same action
+    //       you will need to use xs.merge(), xs.combine(), or some other method to create a single stream
+    //       to pass to the action
     return {
       RESTART:   restart$,
       GAME_OVER: gameOver$,
@@ -205,12 +210,6 @@ export default component({
   view: ({ state, tiles }) => {
     // use destrucuring to get both native and calculated values from the current state
     const { max, over, won } = state
-
-    // if the game is over, get the appropriate message to show the user
-    let message = ''
-    if (over) {
-      message = won ? 'YOU WON!!' : 'Try Again...'
-    }
 
     // return the DOM
     return (
@@ -252,6 +251,16 @@ export default component({
   // - because collection() and switchable() result in valid Sygnal components, you can pass
   //   either directly to an entry in 'children' as below
   children: {
+    // add a sub-component name 'tiles' that is a collection of 'tile' components
+    // - the key name becomes the sub-component's name
+    // - the 1st argument of collection() is a Sygnal or Cycle.js component to make a collection of
+    // - the 2nd argument of collection() can either be a string matching a property on the state containing an array
+    //   OR a state 'lense' which is an object with 'get' and 'set' properties for returning an array from the current state
+    // - in this case, collection() will look at state.tiles, and instantiate a tile component for each element of that array
+    // - the resulting Cycle.js sinks will be automatically linked up correctly to the current component
+    //   and the resulting virtual DOM will be provided as a property of the 1st argument to this component's view() function
+    // - each item in the collection is automatically 'isolated', meaning by default it will only have access to its onw DOM
+    //   and will only see (and be able to set) its own state
     tiles: collection(tile, 'tiles')
   }
 
