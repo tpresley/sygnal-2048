@@ -154,7 +154,7 @@ export default component({
     // depending on what the user pressed
     const move$  = xs.merge(up$, down$, left$, right$)
 
-    // the STATE source has a .stream property which is the raw stream the emits the current state
+    // the STATE source has a .stream property which is the raw stream that emits the current state
     // whenever the state is updated
 
     // filter the raw state for any time the game is not already 'over' and the largest tile
