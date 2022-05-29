@@ -21,6 +21,7 @@ const initialState = {
   tiles: [],
   over: false,
   max: 2,
+  score: 0,
   locked: false,
 }
 
@@ -86,6 +87,12 @@ export default component({
       // in that case, abort the action by returning the special ABORT constant
       if (!tiles) return ABORT
 
+      // points are scored when tiles are merged after a move, and the number of points gained
+      // is the value of the new merged tile
+      // - since when tiles are merged, one of the pair is marked for deletion, we can calculate
+      //   new points gained by looking for tiles marked for deletion and summing up their values
+      const newPoints = tiles.filter(tile => tile.deleted).reduce((acc, tile) => acc + tile.value, 0)
+
       // pause a bit then add a new tile to the board
       setTimeout(_ => {
         next('ADD_TILE')
@@ -93,7 +100,7 @@ export default component({
 
       // return the updated the state
       // - set 'locked' to true to prevent user moves until a new tile is added to the board
-      return { ...state, tiles, locked: true }
+      return { ...state, tiles, score: state.score + newPoints, locked: true }
     },
 
     // add a new tile to the board
@@ -208,14 +215,17 @@ export default component({
   //   under the hood @cycle/dom helpers use Snabbdom, an extremely small and fast virtual DOM library
   view: ({ state, tiles }) => {
     // use destrucuring to get both native and calculated values from the current state
-    const { max, over, won } = state
+    const { score, max, over, won } = state
 
     // return the DOM
     return (
       <div className='container'>
         <h1>Sygnal 2048</h1>
         {/* show the current biggest tile on the board */}
-        <h2>Current Max: { max }</h2>
+        <div className="info">
+          <div className="largest">Largest: { max }</div>
+          <div className="score">Score: { score }</div>
+        </div>
         <div className="board-container">
           <div className='slot-board'>
             {/* normal JS loops and logic work as normal! */}
@@ -238,7 +248,7 @@ export default component({
             </div>
           }
         </div>
-        <div><input type="button" className="restart" value="Start Over" /></div>
+        <div className="restart-container"><input type="button" className="restart" value="Start Over" /></div>
       </div>
     )
   },

@@ -10,6 +10,9 @@ export default defineConfig({
   build: {
     outDir: '../dist',
   },
+  server: {
+    port: 8000
+  },
   esbuild: {
     jsxFactory: `Snabbdom.createElement`,
     jsxInject: `import Snabbdom from 'snabbdom-pragma'`,
