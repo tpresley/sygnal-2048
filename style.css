@@ -11,14 +11,53 @@
 }
 
 body {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  align-items: center;
+  place-content: center;
+  background: linear-gradient(#e66465, #9198e5);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  color: white;
+  text-shadow: 4px 4px black;
+  font-size: 4rem;
+  text-align: center;
+  margin: 0;
+}
+
+.info {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr;
+  padding: 1em;
+  font-size: 1.3em;
+  font-weight: 600;
+}
+
+.largest, .score {
+  text-align: center;
+}
+
+.restart-container {
+  text-align: center;
+  margin-top: 3em;
+}
+
+.restart {
+  filter: drop-shadow(2px 4px 6px black);
 }
 
 .board-container {
   position: relative;
   font-size: var(--tile-font-size);
   height: var(--board-size);
+  width: var(--board-size);
   margin-bottom: 0.5em;
+  filter: drop-shadow(2px 4px 6px black);
 }
 
 .slot-board, .tile-board {
