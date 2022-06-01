@@ -9,12 +9,13 @@ export default defineConfig({
   publicDir: '../public',
   build: {
     outDir: '../dist',
+    emptyOutDir: true
   },
   server: {
     port: 8000
   },
   esbuild: {
-    jsxFactory: `Snabbdom.createElement`,
-    jsxInject: `import Snabbdom from 'snabbdom-pragma'`,
+    jsxFactory: `jsx`,
+    jsxInject: `import { jsx } from 'sygnal/jsx'`,
   }
 });

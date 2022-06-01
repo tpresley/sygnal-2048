@@ -8,7 +8,7 @@
     "vite": "^2.9.9"
   },
   "dependencies": {
-    "sygnal": "^1.0.1",
+    "sygnal": "^1.2.0",
     "xstream": "^11.0.0"
   },
   "scripts": {
