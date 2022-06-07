@@ -270,7 +270,7 @@ export default component({
     //   and the resulting virtual DOM will be provided as a property of the 1st argument to this component's view() function
     // - each item in the collection is automatically 'isolated', meaning by default it will only have access to its onw DOM
     //   and will only see (and be able to set) its own state
-    tiles: collection(tile, 'tiles')
+    tiles: collection(tile, 'tiles', { container: null })
   }
 
 })
