@@ -1,7 +1,6 @@
 'use strict'
 
-import delay from 'xstream/extra/delay'
-import { component, classes, xs, ABORT } from 'sygnal'
+import { component, classes, xs, delay, ABORT } from 'sygnal'
 
 
 const TILE_DELETE_DELAY = 1000
@@ -60,7 +59,7 @@ export default component({
   },
 
   view: ({ state }) => {
-    const { id, value, row, column, hidden } = state
+    const { id, value, row, column, hidden, deleted } = state
 
     // determine the classes to apply to the tile
     const classNames = classes('tile', `tile-${ id }`, { 'new': !!state.new })
@@ -74,6 +73,7 @@ export default component({
       '--row': `       ${row}`,
       '--col': `       ${column}`,
       '--tile-color': `${color}%`,
+      zIndex: deleted ? 10 : 1,
       display: !!hidden ? 'none' : 'inherit'
     }
 
