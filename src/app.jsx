@@ -211,8 +211,8 @@ export default component({
   // the 'view' parameter receives the current state along with any sub-components defined in the 'chidren' parameter (below)
   // the state is always accessible through the 'state' key, and is also aliased to the state driver name ('STATE' by default)
   // - this function must return Virtual DOm elements
-  // - this can be done either using JSX (as below), or by using Preact style Virtual DOM helpers imported from @cycle/dom
-  //   under the hood @cycle/dom helpers use Snabbdom, an extremely small and fast virtual DOM library
+  // - this can be done either using JSX (as below), or by using Preact style Virtual DOM helpers imported from sygnal
+  //   under the hood Sygnal and Cycle.js use Snabbdom, an extremely small and fast virtual DOM library
   view: ({ state }) => {
     // use destrucuring to get both native and calculated values from the current state
     const { score, max, over, won } = state

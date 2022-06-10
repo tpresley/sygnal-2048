@@ -16,8 +16,8 @@ export default component({
   },
 
   intent: ({ STATE }) => {
-    // filter the tile state for when the tile is marked for deletion, but not yet hidden
-    const markedForDeletion$   = STATE.stream.filter(state => state.deleted && !state.hidden)
+    // filter the tile state for when the tile is marked for deletion
+    const markedForDeletion$   = STATE.stream.filter(state => state.deleted)
 
     // delete this tile after TILE_TRANSITION_DURATION ms (to allow transition to complete)
     const delete$ = markedForDeletion$.compose(delay(TILE_TRANSITION_DURATION))
@@ -28,7 +28,7 @@ export default component({
   },
 
   view: ({ state }) => {
-    const { id, value, row, column, hidden, deleted } = state
+    const { id, value, row, column, deleted } = state
 
     // determine the classes to apply to the tile
     const classNames = classes('tile', `tile-${ id }`, { 'new': !!state.new })
@@ -43,8 +43,7 @@ export default component({
       '--col': `       ${column}`,
       '--tile-color': `${color}%`,
       '--duration':   `${TILE_TRANSITION_DURATION}ms`,
-      zIndex: deleted ? 10 : 1,
-      display: !!hidden ? 'none' : 'inherit'
+      zIndex: deleted ? 10 : 1
     }
 
     // put it all together and return virtual DOM
