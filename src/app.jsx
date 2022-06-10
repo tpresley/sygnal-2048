@@ -213,7 +213,7 @@ export default component({
   // - this function must return Virtual DOm elements
   // - this can be done either using JSX (as below), or by using Preact style Virtual DOM helpers imported from @cycle/dom
   //   under the hood @cycle/dom helpers use Snabbdom, an extremely small and fast virtual DOM library
-  view: ({ state, tiles }) => {
+  view: ({ state }) => {
     // use destrucuring to get both native and calculated values from the current state
     const { score, max, over, won } = state
 
