@@ -1,8 +1,8 @@
 'use strict'
 
-import { component, collection, xs, ABORT } from 'sygnal'
+import { component, xs, ABORT } from 'sygnal'
 import { addTile, shift, hasValidMove } from './lib/utils'
-import tile from './tile'
+import Tile from './tile'
 
 // key value constants
 const UP    = 'ArrowUp'
@@ -11,7 +11,7 @@ const LEFT  = 'ArrowLeft'
 const RIGTH = 'ArrowRight'
 
 // delay after a move before a new tile is added to the board
-const NEW_TILE_DELAY = 100
+const NEW_TILE_DELAY = 120
 
 // initial app state
 // - this can be set directly as a parameter of component()
@@ -227,50 +227,33 @@ export default component({
           <div className="score">Score: { score }</div>
         </div>
         <div className="board-container">
+
           <div className='slot-board'>
             {/* normal JS loops and logic work as normal! */}
             { Array(16).fill().map(_ => <div className="slot"></div>) }
           </div>
-          <div className='tile-board'>
-            {/* display the 'tiles' sub-component defined in the 'children' parameter below */}
-            { tiles }
-          </div>
+
+          {/* use the built-in collection element to add collections */}
+          <collection of={ Tile } for="tiles" className="tile-board" />
+
           {/* if the game is over, and the user won... */}
           { over && won &&
             <div className="gameover won" >
               <span className="won-message">YOU WON!!</span>
             </div>
           }
+
           {/* if the game is over, and the user lost... */}
           { over && !won &&
             <div className="gameover lost" >
               <span className="lost-message">GAME OVER</span>
             </div>
           }
+
         </div>
         <div className="restart-container"><input type="button" className="restart" value="Start Over" /></div>
       </div>
     )
-  },
-
-
-  // the 'children' parameter is one way to use sub-components in Sygnal
-  // - takes an object mapping any valid Sygnal or Cycle.js component to a name
-  // - the key name will be used when passing the rendered component to the 'view' function
-  // - because collection() and switchable() result in valid Sygnal components, you can pass
-  //   either directly to an entry in 'children' as below
-  children: {
-    // add a sub-component name 'tiles' that is a collection of 'tile' components
-    // - the key name becomes the sub-component's name
-    // - the 1st argument of collection() is a Sygnal or Cycle.js component to make a collection of
-    // - the 2nd argument of collection() can either be a string matching a property on the state containing an array
-    //   OR a state 'lense' which is an object with 'get' and 'set' properties for returning an array from the current state
-    // - in this case, collection() will look at state.tiles, and instantiate a tile component for each element of that array
-    // - the resulting Cycle.js sinks will be automatically linked up correctly to the current component
-    //   and the resulting virtual DOM will be provided as a property of the 1st argument to this component's view() function
-    // - each item in the collection is automatically 'isolated', meaning by default it will only have access to its onw DOM
-    //   and will only see (and be able to set) its own state
-    tiles: collection(tile, 'tiles', { container: null })
   }
 
 })

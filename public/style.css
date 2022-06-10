@@ -120,8 +120,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: inset 100ms ease-in-out;
-  /* transform: translate(var(--col-offset), var(--row-offset)); */
+  transition: inset var(--duration, 150) ease-in-out;
   top: var(--row-offset);
   left: var(--col-offset);
   border-radius: 3px;
