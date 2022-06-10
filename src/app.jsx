@@ -8,7 +8,7 @@ import Tile from './tile'
 const UP    = 'ArrowUp'
 const DOWN  = 'ArrowDown'
 const LEFT  = 'ArrowLeft'
-const RIGTH = 'ArrowRight'
+const RIGHT = 'ArrowRight'
 
 // delay after a move before a new tile is added to the board
 const NEW_TILE_DELAY = 120
@@ -155,7 +155,7 @@ export default component({
     const up$    = allKey$.filter(keyFilter(UP)).mapTo('UP')
     const down$  = allKey$.filter(keyFilter(DOWN)).mapTo('DOWN')
     const left$  = allKey$.filter(keyFilter(LEFT)).mapTo('LEFT')
-    const right$ = allKey$.filter(keyFilter(RIGTH)).mapTo('RIGHT')
+    const right$ = allKey$.filter(keyFilter(RIGHT)).mapTo('RIGHT')
 
     // merge the filtered key presses together into a single stream containing UP, DOWN, LEFT or RIGHT
     // depending on what the user pressed
