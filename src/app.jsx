@@ -234,7 +234,7 @@ export default component({
           </div>
 
           {/* use the built-in collection element to add collections */}
-          <collection of={ Tile } for="tiles" className="tile-board" />
+          <collection of={ Tile } from="tiles" className="tile-board" />
 
           {/* if the game is over, and the user won... */}
           { over && won &&
