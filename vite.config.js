@@ -12,7 +12,7 @@ export default defineConfig({
     emptyOutDir: true
   },
   server: {
-    port: 8000
+    port: 5173
   },
   esbuild: {
     jsxFactory: `jsx`,
