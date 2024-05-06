@@ -39,6 +39,7 @@ TILE.model = {
 
 TILE.intent = ({ STATE, DOM }) => {
   // filter the tile state for when the tile is marked for deletion
+  // - tiles are marked for deletion in the shift() function when two tiles are merged
   const markedForDeletion$ = STATE.stream.filter(state => state.deleted)
 
   // delete this tile after TILE_TRANSITION_DURATION ms (to allow transition to complete)

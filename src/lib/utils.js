@@ -81,10 +81,13 @@ export function shift(rawTiles, direction) {
 
 
 export function hasValidMove(tiles) {
+  // make a copy of the tiles so actual tiles don't get marked for deletion
   const copy = tiles.map(tile => ({ ...tile }))
+  // we can tell if there are any valid moves by checking one vertical and one horizontal shift
   let up   = shift(copy, 'UP'  )
   let left = shift(copy, 'LEFT')
 
+  // if both up and left return false then there are no valid moves
   if (!up && !left) return false
 
   return true

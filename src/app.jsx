@@ -2,13 +2,13 @@ import { xs, ABORT } from 'sygnal'
 import { addTile, shift, hasValidMove } from './lib/utils'
 import Tile from './tile'
 
-// key value constants
+// key value constants (js event key names)
 const UP    = 'ArrowUp'
 const DOWN  = 'ArrowDown'
 const LEFT  = 'ArrowLeft'
 const RIGHT = 'ArrowRight'
 
-// delay after a move before a new tile is added to the board
+// delay after a move before a new tile is added to the board in ms
 const NEW_TILE_DELAY = 120
 
 // initial app state
@@ -24,8 +24,8 @@ const INITIAL_STATE = {
 }
 
 
-// the main function is the 'view' and receives the current state along with any sub-components defined in the 'chidren' parameter (below)
-// the state is always accessible through the 'state' key, and is also aliased to the state driver name ('STATE' by default)
+// the main function is the 'view' and receives the current state which is always accessible 
+// through the 'state' key, and is also aliased to the state driver name ('STATE' by default)
 // - this function must return Virtual DOM elements (JSX)
 export default function BOARD({ state }) {
   // use destrucuring to get both native and calculated values from the current state
@@ -35,7 +35,7 @@ export default function BOARD({ state }) {
   return (
     <div className='container'>
       <h1>Sygnal 2048</h1>
-      {/* show the current biggest tile on the board */}
+      {/* show the current biggest tile on the board and the current score */}
       <div className="info">
         <div className="largest">Largest: { max }</div>
         <div className="score">Score: { score }</div>
@@ -81,16 +81,19 @@ BOARD.initialState = INITIAL_STATE
 // - 'actions' are calls to cause a 'side effect'
 //   this can be updating state, making an HTTP request, playing a sound, or anything else
 // - if an 'action' is provided a function, it will be treated as a 'state reducer'
-//   which receives 3 inputs (state, data, and next)
+//   which receives 4 inputs (state, data, next, and extra)
 // - 'state' is the current state when the action is triggered
 // - 'data' is whatever data was passed by the triggering stream (see 'intent' below)
 // - 'next' is a function allowing you to call another action after the current one completes
 //   and takes the name of the next action, and optionally data to pass to the action
-// - the 'next' function can be called multiple times, and can be delayed (via setTimeout for example)
+// - the 'next' function can be called multiple times, and can be delayed by providing the 3rd parameter with a number in ms
+// - 'extra' is an object containing children, props, and context if provided
 BOARD.model = {
-
+  // the special BOOTSTRAP action is called once when a component is instantiated
+  // - this is similar to onMount or useEffect(() => {...}, []) in React
   BOOTSTRAP: {
     LOG: (state, data, next) => {
+      // call the RESTART action to start the game
       next('RESTART')
       return 'Starting game...'
     }
@@ -169,7 +172,6 @@ BOARD.intent = ({ DOM }) => {
   // or any custom events you create and dispatch yourself
   // the result of .events() is an observable stream that emits the DOM event when they happen
 
-  // if components are configured to be 'isolated' (using the 'isolateOpts' paremeter) then
   // DOM events will be limited to DOM elements INSIDE the current component
   // to 'break out' of the isolated scope, use DOM.select('document') to access the entire page
   // - after DOM.select('document') adding additional .select()'s will target ALL elements
@@ -205,7 +207,7 @@ BOARD.intent = ({ DOM }) => {
   //   1) the 'action' defined in the model parameter with the same name will be executed
   //   2) any data provided by the stream will be passed to the 2nd parameter of the action handler
   // - it is convention to use ALL_CAPS for 'action' names, but any valid Javascript key name will work
-  //   (including JS Symbols!) as long as the names here match those in 'model'
+  //   as long as the names here match those in 'model'
   // NOTE: each 'action' can only be specified once, so if multiple streams can initiate the same action
   //       you will need to use xs.merge(), xs.combine(), or some other method to create a single stream
   //       to pass to the action
