@@ -14,12 +14,13 @@
 
       // initialize the application
       import { run } from 'sygnal';
+      import LlmDriver from './lib/llmDriver'
       import App from './app';
 
       // run() adds STATE, DOM, EVENTS, and LOG drivers automatically
       // and mounts to the #root element
       // to add additional Cycle.js drivers, provide them as the second parameter to run()
-      run(App);
+      run(App, { LLM: LlmDriver() });
     </script>
   </body>
 </html>

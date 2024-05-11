@@ -21,12 +21,28 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.app {
+  display: flex;
+  flex-direction: row;
+}
+
+.vs {
+  position: relative;
+  top: 15rem;
+  font-size: 5rem;
+  margin: 2rem;
+}
+
 h1 {
   color: white;
   text-shadow: 4px 4px black;
   font-size: 4rem;
   text-align: center;
   margin: 0;
+}
+
+h1.bad-moves {
+  color: darkred;
 }
 
 .info {
@@ -168,8 +184,23 @@ h1 {
   --col: 3
 }
 
+[name=agent] {
+  font-size: 2rem;
+  margin-right: .5rem;
+}
 
 .restart {
   font-size: 1.5rem;
   padding: 0.5em;
+}
+
+.nerd-stats {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  max-width: 25rem;
+}
+
+.nerd-stats div {
+  margin: 0;
 }
