@@ -1,6 +1,6 @@
 import { xs } from 'sygnal'
 
-const OPENAI_API_KEY = 'YOUR_API_KEY_HERE'
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_KEY || ''
 
 // The OpenAI model to use: gpt-3.5-turbo, gpt-4-turbo, etc
 const OPEN_AI_MODEL = 'gpt-3.5-turbo'
@@ -19,7 +19,7 @@ Tiles slide toward the chosen direction, and adjacent tiles of the same value me
 Tiles with different values do not merge, and will stack up from the far side of the board in the chosen direction in the same order, but with no empty spaces between them.  
 Tiles merge from the farthest side toward the nearest, and each tile can merge only once per move.  
 The shape of the board does not change based on your moves, only the tiles on the board move and merge in the chosen direction, leaving a 4x4 board with the appropriate changes to tiles shifted or merged on top of the board.
-At the beginning of the game, 4 tiles with value 2 or 4 are placed randomly on the board.  
+At the beginning of the game, 2 tiles with value 2 or 4 are placed randomly on the board.  
 After each move, a new tile with value 2 or 4 is added to a random empty cell.  
 
 The game ends when you create a tile with a value of 2048 through merges (you win), or when there are no empty cells and no valid moves (you lose). 
@@ -29,7 +29,12 @@ The game ends when you create a tile with a value of 2048 through merges (you wi
 
 Examples of attempted moves which result in no changes (bad moves):
 If the board is [[0, 0, 2, 4], [0, 0, 0, 8], [0, 8, 2, 4], [0, 0, 0, 4]], making a move to the RIGHT would not result in any tiles moving or merging. 
-If the board is [[0, 0, 0, 0], [0, 0, 0, 8], [2, 0, 2, 16], [4, 0, 4, 8]], making a move to the DOWN would not result in any tiles moving or merging. 
+If the board is [[0, 0, 0, 0], [0, 0, 0, 8], [2, 0, 2, 16], [4, 0, 4, 8]], making a move to the DOWN would not result in any tiles moving or merging.
+
+Examples of valid moves (good moves):
+If the board is [[0, 0, 0, 0], [0, 0, 0, 8], [2, 0, 2, 16], [4, 0, 4, 8]], making a move to the LEFT would result in the board being [[0, 0, 0, 0], [8, 0, 0, 0], [4, 16, 0, 0], [8, 8, 0, 0]].  
+If the board is [[2, 2, 2, 0], [0, 4, 4, 4], [8, 16, 0, 16], [2, 2, 2, 2]], making a move to the RIGHT would result in the board being [[0, 0, 2, 4], [0, 0, 4, 8], [0, 0, 8, 32], [0, 0, 4, 4]].  
+If the board is [[2, 2, 2, 0], [2, 4, 4, 4], [8, 16, 4, 16], [2, 2, 0, 0]], making a move to the DOWN would result in the board being [[0, 2, 0, 0], [2, 4, 0, 0], [8, 16, 2, 4], [2, 2, 8, 16]].
 
 **Strategies:**
 1. **Merge Largest Tiles:** Focus on merging high-value tiles to gain points.
@@ -122,9 +127,9 @@ export default function LlmDriver() {
 async function callOpenAi(board, avoid) {
   let prompt = `Current Board: ${ board }\n`
   if (avoid) {
-    prompt += ` Avoid using the following directions: ${avoid}\n`
+    prompt += ` Avoid using the following directions: ${avoid}  \n`
   }
-  prompt += `. Next Move: `
+  prompt += `Next Move:  \n`
   const content = {
     model: OPEN_AI_MODEL,
     messages: [
@@ -152,9 +157,9 @@ async function callOpenAi(board, avoid) {
 async function callOllama(board, avoid) {
   let prompt = `Current Board: ${ board }\n`
   if (avoid) {
-    prompt += ` Avoid using the following directions: ${avoid}\n`
+    prompt += ` Avoid using the following directions: ${avoid}  \n`
   }
-  prompt += `. Next Move: `
+  prompt += `Next Move: `
   const content = {
     model: OLLAMA_MODEL,
     system: SYSTEM_PROMPT,
