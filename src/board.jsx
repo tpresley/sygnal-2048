@@ -33,7 +33,7 @@ const INITIAL_STATE = {
 // - this function must return Virtual DOM elements (JSX)
 export default function BOARD({ state }) {
   // use destrucuring to get both native and calculated values from the current state
-  const { score, max, over, won, badMoves, totalMoves, totalBadMoves, reasons } = state
+  const { score, max, over, won, badMoves, totalMoves, totalBadMoves, reasons, agent } = state
 
   // return the DOM
   return (
@@ -75,10 +75,10 @@ export default function BOARD({ state }) {
       </div>
       <div className="restart-container">
         <select name="agent">
-          <option value="human">Human</option>
-          <option value="openai">OpenAI</option>
-          <option value="ollama">Ollama</option>
-          <option value="random">Random</option>
+          <option value="human" selected={ agent === 'human' }>Human</option>
+          <option value="openai" selected={ agent === 'openai' }>OpenAI</option>
+          <option value="ollama" selected={ agent === 'ollama' }>Ollama</option>
+          <option value="random" selected={ agent === 'random' }>Random</option>
         </select>
         <input type="button" className="restart" value="Start Over" />
       </div>
@@ -86,10 +86,10 @@ export default function BOARD({ state }) {
         <div>Total Moves: { totalMoves }</div>
         <div>Bad Moves: { totalBadMoves } { (badMoves || []).join(' ') }</div>
         <div>% Bad Moves: { (totalMoves && (totalBadMoves / totalMoves * 100).toFixed(2)) }%</div>
-        <div>
+        {/* <div>
           Reasons:
           <ul>{ reasons && reasons.map(reason => <li>{ reason }</li>) }</ul>
-        </div>
+        </div> */}
       </div>
     </div>
   )
@@ -235,6 +235,13 @@ BOARD.model = {
     return { ...state, agent: data }
   },
 
+  HMR: {
+    LOG: (state, data, next) => {
+      next('CHANGE_AGENT', state.agent)
+      return `Setting agent back to '${ state.agent }' after hot module reload`
+    }
+  }
+
 }
 
 // the 'intent' parameter receives an object containing a 'source' for each
@@ -307,3 +314,5 @@ BOARD.intent = ({ STATE, DOM, LLM }) => {
     CHANGE_AGENT: changeAgent$
   }
 }
+
+BOARD.hmrActions = 'HMR'

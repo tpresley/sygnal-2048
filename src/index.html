@@ -10,7 +10,7 @@
     <div id="root"></div>
     <script type="module">
       // import CSS (Vite automatically injects this properly on bundling)
-      import classes from '../public/style.css';
+      import '../public/style.css';
 
       // initialize the application
       import { run } from 'sygnal';
@@ -20,7 +20,11 @@
       // run() adds STATE, DOM, EVENTS, and LOG drivers automatically
       // and mounts to the #root element
       // to add additional Cycle.js drivers, provide them as the second parameter to run()
-      run(App, { LLM: LlmDriver() });
+      let { hmr } = run(App, { LLM: LlmDriver() });
+
+      if (import.meta.hot) {
+        import.meta.hot.accept('./app', hmr)
+      }
     </script>
   </body>
 </html>
