@@ -10,7 +10,7 @@
     <div id="root"></div>
     <script type="module">
       // import CSS (Vite automatically injects this properly on bundling)
-      import classes from '../public/style.css';
+      import '../public/style.css';
 
       // initialize the application
       import { run } from 'sygnal';
@@ -19,7 +19,20 @@
       // run() adds STATE, DOM, EVENTS, and LOG drivers automatically
       // and mounts to the #root element
       // to add additional Cycle.js drivers, provide them as the second parameter to run()
-      run(App);
+      //
+      // run() returns an object with sinks, sources, dispose, and hmr:
+      // - sinks and sources are the sinks and sources provided by the drivers to the component 
+      //   and can be used for advanced debugging
+      // - dispose is a function that will initiate cleanup and dispose the application
+      // - hmr is a function that can be passed to Vite's hot.accept() function to preserve 
+      //   state across HMR updates
+      const { hmr } = run(App);
+
+      // to preserve state across HMR updates, use Vite's hot.accept() and pass the path to your 
+      // root component and the hmr function returned by run()
+      if (import.meta.hot) {
+        import.meta.hot.accept('./app', hmr)
+      }
     </script>
   </body>
 </html>
