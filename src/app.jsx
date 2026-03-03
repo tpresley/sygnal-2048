@@ -180,7 +180,7 @@ BOARD.intent = ({ DOM }) => {
   //       DOM events outside the item component itself, use the method above
 
   // capture all user keydown events in the browser window, and extract the 'key' from the event object
-  const allKey$   = DOM.select('document').events('keydown').map(e => e.key)
+  const allKey$   = DOM.keydown('document').map(e => e.key)
 
   // simple helper to determine if the current key pressed matches the specified key
   const keyFilter = (key) => (pressed) => pressed === key
@@ -200,7 +200,7 @@ BOARD.intent = ({ DOM }) => {
 
   // look for when the user clicks on either the restart button (.restart),
   // or the 'Game Over' notification (.gameover)
-  const restart$ = DOM.select('.restart, .gameover').events('click')
+  const restart$ = DOM.click('.restart, .gameover')
 
   // map the streams we created above to 'action' names that will happen when those streams fire
   // - when these streams fire:
