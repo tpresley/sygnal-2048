@@ -180,7 +180,7 @@ BOARD.intent = ({ DOM }) => {
   //       DOM events outside the item component itself, use the method above
 
   // capture all user keydown events in the browser window, and extract the 'key' from the event object
-  const allKey$   = DOM.keydown('document').map(e => e.key)
+  const allKey$   = DOM.keydown('document').key()
 
   // simple helper to determine if the current key pressed matches the specified key
   const keyFilter = (key) => (pressed) => pressed === key
