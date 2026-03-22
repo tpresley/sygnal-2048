@@ -1,9 +1,8 @@
-import { defineConfig } from 'vite';
-
-
-// https://vitejs.dev/config/
+import { defineConfig } from 'vite'
+import sygnal from 'sygnal/vite'
 
 export default defineConfig({
+  plugins: [sygnal()],
   root: 'src',
   base: '',
   publicDir: '../public',
@@ -14,8 +13,4 @@ export default defineConfig({
   server: {
     port: 5173
   },
-  esbuild: {
-    jsxFactory: `jsx`,
-    jsxInject: `import { jsx } from 'sygnal/jsx'`,
-  }
-});
+})
