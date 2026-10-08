@@ -1,6 +1,6 @@
-import { xs, ABORT } from 'sygnal'
+import { xs, ABORT, Collection } from 'sygnal'
 import { addTile, shift, hasValidMove } from './lib/utils'
-import Tile from './tile'
+import Tile from './tile.jsx'
 
 // key value constants (js event key names)
 const UP    = 'ArrowUp'
@@ -18,6 +18,7 @@ const NEW_TILE_DELAY = 120
 const INITIAL_STATE = {
   tiles: [],
   over: false,
+  won: false,
   max: 2,
   score: 0,
   locked: false,
@@ -47,23 +48,26 @@ export default function BOARD({ state }) {
           { Array(16).fill().map(_ => <div className="slot"></div>) }
         </div>
 
-        {/*
-          use the built-in collection element to add arrays of components 
-          - this line will create a new Tile component for each item
-            in the tiles array on the current state
-        */}
-        <collection of={ Tile } from="tiles" className="tile-board" />
+        <div className="tile-board">
+          {/*
+            use the built-in Collection component to add arrays of components
+            - this line will create a new Tile component for each item
+              in the tiles array on the current state
+            - items render directly into the parent element (no wrapper)
+          */}
+          <Collection of={ Tile } from="tiles" />
+        </div>
 
         {/* if the game is over, and the user won... */}
         { over && won &&
-          <div className="gameover won" >
+          <div className="gameover won" role="button" tabIndex={ 0 } aria-label="Start over">
             <span className="won-message">YOU WON!!</span>
           </div>
         }
 
         {/* if the game is over, and the user lost... */}
         { over && !won &&
-          <div className="gameover lost" >
+          <div className="gameover lost" role="button" tabIndex={ 0 } aria-label="Start over">
             <span className="lost-message">GAME OVER</span>
           </div>
         }
@@ -81,22 +85,23 @@ BOARD.initialState = INITIAL_STATE
 // - 'actions' are calls to cause a 'side effect'
 //   this can be updating state, making an HTTP request, playing a sound, or anything else
 // - if an 'action' is provided a function, it will be treated as a 'state reducer'
-//   which receives 4 inputs (state, data, next, and extra)
+//   which receives 4 inputs (state, data, next, and props)
 // - 'state' is the current state when the action is triggered
 // - 'data' is whatever data was passed by the triggering stream (see 'intent' below)
 // - 'next' is a function allowing you to call another action after the current one completes
 //   and takes the name of the next action, and optionally data to pass to the action
 // - the 'next' function can be called multiple times, and can be delayed by providing the 3rd parameter with a number in ms
-// - 'extra' is an object containing children, props, and context if provided
+// - 'props' is an object containing the parent's props plus state, context, children, and slots
 BOARD.model = {
   // the special BOOTSTRAP action is called once when a component is instantiated
   // - this is similar to onMount or useEffect(() => {...}, []) in React
   BOOTSTRAP: {
-    LOG: (state, data, next) => {
+    // EFFECT is for side effects only (it returns nothing)
+    EFFECT: (state, data, next) => {
       // call the RESTART action to start the game
       next('RESTART')
-      return 'Starting game...'
-    }
+    },
+    LOG: () => 'Starting game...'
   },
 
   // restart the game
@@ -163,7 +168,7 @@ BOARD.model = {
 //   + DOM
 //   + EVENTS
 //   + LOG
-// - additional drivers (for networking for example) can be added in the 2nd parameter of 'run()'
+// - additional drivers can be added in the 2nd parameter of 'run()'
 BOARD.intent = ({ DOM }) => {
   // the DOM source has .select() and .events() methods for listening to user actions in the browser
   // the .select() method can be passed any valid CSS selector to locate DOM elements
@@ -176,7 +181,7 @@ BOARD.intent = ({ DOM }) => {
   // to 'break out' of the isolated scope, use DOM.select('document') to access the entire page
   // - after DOM.select('document') adding additional .select()'s will target ALL elements
   //   on the page that match the CSS selector
-  // NOTE: items in a collection() comoponent are automatically isolated, so to access any
+  // NOTE: items in a Collection component are automatically isolated, so to access any
   //       DOM events outside the item component itself, use the method above
 
   // capture all user keydown events in the browser window, and extract the 'key' from the event object
@@ -200,7 +205,9 @@ BOARD.intent = ({ DOM }) => {
 
   // look for when the user clicks on either the restart button (.restart),
   // or the 'Game Over' notification (.gameover)
-  const restart$ = DOM.click('.restart, .gameover')
+  // - the 'Game Over' notification can also be triggered from the keyboard with Enter or Space
+  const overlayKey$ = DOM.keydown('.gameover').key().filter(key => key === 'Enter' || key === ' ')
+  const restart$    = xs.merge(DOM.click('.restart, .gameover'), overlayKey$)
 
   // map the streams we created above to 'action' names that will happen when those streams fire
   // - when these streams fire:
