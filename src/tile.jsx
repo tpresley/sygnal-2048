@@ -34,13 +34,14 @@ TILE.model = {
   // delete the current tile
   // NOTE: with Sygnal collection components, setting the state of
   //       an individual item to 'undefined' causes it to be automatically removed
-  DELETE: (state) => undefined
+  DELETE: () => undefined
 }
 
-TILE.intent = ({ STATE, DOM }) => {
-  // filter the tile state for when the tile is marked for deletion
+TILE.intent = ({ STATE }) => {
+  // watch the tile state for when the tile is marked for deletion
   // - tiles are marked for deletion in the shift() function when two tiles are merged
-  const markedForDeletion$ = STATE.stream.filter(state => state.deleted)
+  // - STATE.watch() emits the selected value each time it changes
+  const markedForDeletion$ = STATE.watch(state => !!state.deleted).filter(deleted => deleted)
 
   // delete this tile after TILE_TRANSITION_DURATION ms (to allow transition to complete)
   const delete$ = markedForDeletion$.compose(delay(TILE_TRANSITION_DURATION))

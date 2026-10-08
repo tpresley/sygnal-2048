@@ -31,6 +31,16 @@ npm run build
 ```
 the compiled version will be in the 'dist' folder
 
+Run the tests (Vitest)
+```bash
+npm test
+```
+
+Check the Sygnal wiring statically
+```bash
+npx sygnal-check --strict
+```
+
 To serve the compiled site locally
 ```bash
 npm run preview
